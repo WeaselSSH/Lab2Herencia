@@ -4,13 +4,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class Empleado {
-    protected int codigoEmp;
+    protected String codigoEmp;
     protected String nombreEmp;
     protected Calendar fechaContratacion;
     protected double salarioBase;
     protected double horasTrabajadas;
     
-    public Empleado(int codigoEmp, String nombreEmp,double salarioBase){
+    public Empleado(String codigoEmp, String nombreEmp,double salarioBase){
         this.codigoEmp=codigoEmp;
         this.nombreEmp=nombreEmp;
         this.fechaContratacion=Calendar.getInstance();

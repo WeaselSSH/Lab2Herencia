@@ -14,7 +14,7 @@ import java.util.Calendar;
 public class EmpleadoTemporal extends Empleado{
     private Calendar fechaFin;
     
-    public EmpleadoTemporal(int codigoEmp, String nombreEmp, double salarioBase, Calendar fechaFin){
+    public EmpleadoTemporal(String codigoEmp, String nombreEmp, double salarioBase, Calendar fechaFin){
         super(codigoEmp, nombreEmp, salarioBase);
         this.fechaFin = fechaFin;
     }
