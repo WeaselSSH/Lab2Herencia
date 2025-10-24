@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package empresamain;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -13,8 +14,9 @@ import javax.swing.*;
  *
  * @author esteb
  */
-
 public class FrmCalcularPago extends BaseFrame {
+
+    private Empresa empresa = new Empresa();
 
     private JPanel panelPrincipal, panelNorte, panelCentro;
     private JLabel lblTitulo, lblCodigo, lblNombre, lblTotalPagar;
@@ -51,7 +53,7 @@ public class FrmCalcularPago extends BaseFrame {
 
         txtCodigo = crearTextField("", 280, 60, 150, 25);
         panelCentro.add(txtCodigo);
-        
+
         lblNombre = crearLabel("Nombre:", 150, 110, 120, 25);
         lblNombre.setFont(lblNombre.getFont().deriveFont(Font.BOLD, 18f));
         panelCentro.add(lblNombre);
@@ -69,6 +71,20 @@ public class FrmCalcularPago extends BaseFrame {
         panelCentro.add(txtTotalPagar);
 
         btnCalcular = crearBoton("Calcular Pago", 225, 250, 150, 45);
+        btnCalcular.addActionListener(e -> {
+            String codigo = txtCodigo.getText();
+            String resultado = empresa.calcularPagoConNombre(codigo);
+
+            if (resultado.equals("Empleado no encontrado")) {
+                txtNombre.setText("");
+                txtTotalPagar.setText("");
+                JOptionPane.showMessageDialog(this, "Empleado no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                String[] partes = resultado.replace("Empleado: ", "").split(" - Pago: ");
+                txtNombre.setText(partes[0]);
+                txtTotalPagar.setText(partes[1]);
+            }
+        });
         panelCentro.add(btnCalcular);
 
         setContentPane(panelPrincipal);

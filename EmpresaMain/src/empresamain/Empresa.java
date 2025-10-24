@@ -4,113 +4,109 @@
  */
 package empresamain;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List; 
+import java.util.List;
 
 /**
  *
  * @author cglm6
  */
 public class Empresa {
-    
-    
-    private List<Empleado> empleados = new ArrayList<>();
 
-    private Empleado buscarEmpleadoPorCodigoInterno(String codigo) {
-            for (Empleado emp : this.empleados) {
-                if (emp.getCodigoEmp().equals(codigo)) {
-                    return emp;
-                }
-            }
-            return null;
-    }
-    
+    private ArrayList<Empleado> empleados = new ArrayList<>();
+
     public boolean registrarEmpleado(Empleado empleado) {
-            String codigo = empleado.getCodigoEmp();
-
-            if (buscarEmpleadoPorCodigoInterno(codigo) != null) { 
+        for (Empleado emp : empleados) {
+            if (emp.getCodigoEmp().equals(empleado.getCodigoEmp())) {
                 return false;
             }
-
-            empleados.add(empleado);
-            return true;
+        }
+        empleados.add(empleado);
+        return true;
     }
 
     public boolean registrarHoras(String codigoEmp, int horas) {
-        Empleado emp = buscarEmpleadoPorCodigoInterno(codigoEmp);
-        if (emp == null) return false;
-        emp.getHorasTrabajadas(emp.horasTrabajadas + horas);
-        return true;
-        
-    }
-    
-    public boolean registrarVenta(String codigoEmp, double monto) {
-          Empleado emp = buscarEmpleadoPorCodigoInterno(codigoEmp);
-            if (emp instanceof EmpleadoVentas empleadoVentas) {
-              empleadoVentas.registrarVenta(codigoEmp, monto);
-              return true;
-             }
-          return false;
-      }
-    
-    public boolean finContrato(String codigoEmp, Calendar nuevaFecha) {
-            Empleado emp = buscarEmpleadoPorCodigoInterno(codigoEmp);
-            if (emp instanceof EmpleadoTemporal empleadoTemporal) {
-                empleadoTemporal.actualizarFecha(nuevaFecha);
-                return true;
-            }
+        Empleado emp = buscarEmpleado(codigoEmp);
+        if (emp == null) {
             return false;
+        }
+        emp.registrarHoras(horas);
+        return true;
     }
 
-     public double calcularPago(String codigo) {
-        Empleado emp = buscarEmpleadoPorCodigoInterno(codigo); 
-        return (emp != null) ? emp.calcularPago() : 0;
+    // Registrar una venta (solo para empleados de ventas)
+    public boolean registrarVenta(String codigoEmp, double monto) {
+        Empleado emp = buscarEmpleado(codigoEmp);
+        if (emp instanceof EmpleadoVentas) {
+            ((EmpleadoVentas) emp).registrarVentas(monto);
+            return true;
+        }
+        return false;
     }
-    
-    public Empleado buscarEmpleadoPorCodigo(String codigo){
-        
-        return buscarEmpleadoPorCodigoInterno(codigo);
-    }
-     
-    int countEstandar = 0;
-    int countTemporal = 0;
-    int countVentas = 0;
-    
-    
-    public void Reporte() {
-        
-        for (Empleado emp : empleados) { 
-            String codigo = emp.getCodigoEmp();
-            String info = String.format("  [%s] Nombre: %s, Horas: %.1f, Salario Base: %.2f", 
-               codigo, emp.getNombreEmp(), emp.getHorasTrabajadas(), emp.getSalarioBase());
 
-            if (emp instanceof EmpleadoVentas empVent) {
-                double ventas = empVent.getVentasMensual();
-                double comision = empVent.calcularComision(); 
+    public boolean finContrato(String codigoEmp, LocalDate nuevaFecha) {
+        Empleado emp = buscarEmpleado(codigoEmp);
+        if (emp instanceof EmpleadoTemporal) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(nuevaFecha.getYear(), nuevaFecha.getMonthValue() - 1, nuevaFecha.getDayOfMonth());
+            ((EmpleadoTemporal) emp).actualizarFecha(cal);
+            return true;
+        }
+        return false;
+    }
+
+    public String calcularPagoConNombre(String codigoEmp) {
+        Empleado emp = buscarEmpleado(codigoEmp);
+        if (emp != null) {
+            return "Empleado: " + emp.getNombreEmp() + " - Pago: " + emp.calcularPago();
+        }
+        return "Empleado no encontrado";
+    }
+
+    public void generarReportes() {
+        int countEstandar = 0, countTemporal = 0, countVentas = 0;
+        StringBuilder reporteEstandar = new StringBuilder();
+        StringBuilder reporteTemporal = new StringBuilder();
+        StringBuilder reporteVentas = new StringBuilder();
+
+        for (Empleado emp : empleados) {
+            String info = String.format("  [%s] Nombre: %s, Horas: %.1f, Salario Base: %.2f",
+                    emp.getCodigoEmp(), emp.getNombreEmp(), emp.getHorasTrabajadas(), emp.getSalarioBase());
+
+            if (emp instanceof EmpleadoVentas) {
+                EmpleadoVentas empVent = (EmpleadoVentas) emp;
+                double ventas = empVent.ventasAnuales();
+                double comision = empVent.calcularComision();
                 info += String.format(", Ventas Acum.: %.2f, Comisión: %.2f", ventas, comision);
                 reporteVentas.append(info).append("\n");
                 countVentas++;
+            } else if (emp instanceof EmpleadoTemporal) {
+                EmpleadoTemporal empTemp = (EmpleadoTemporal) emp;
+                info += String.format(", Fin Contrato: %s", empTemp.getFechaFin().toString());
+                reporteTemporal.append(info).append("\n");
+                countTemporal++;
+            } else {
+                reporteEstandar.append(info).append("\n");
+                countEstandar++;
+            }
+        }
 
-                 } else if (emp instanceof EmpleadoTemporal) {
-                    EmpleadoTemporal empTemp = (EmpleadoTemporal) emp;
-                    info += String.format(", Fin Contrato: %s", empTemp.getFechaFin().toString());
-                    reporteTemporal.append(info).append("\n");
-                    countTemporal++;
-
-                } else {
-                    reporteEstandar.append(info).append("\n");
-                    countEstandar++;
-                }
-        } 
+        System.out.println("=== Empleados Estandar (" + countEstandar + ") ===");
+        System.out.println(reporteEstandar);
+        System.out.println("=== Empleados Temporales (" + countTemporal + ") ===");
+        System.out.println(reporteTemporal);
+        System.out.println("=== Empleados de Ventas (" + countVentas + ") ===");
+        System.out.println(reporteVentas);
     }
 
-
-
-
-
-
-
+    private Empleado buscarEmpleado(String codigoEmp) {
+        for (Empleado emp : empleados) {
+            if (emp.getCodigoEmp().equals(codigoEmp)) {
+                return emp;
+            }
+        }
+        return null;
+    }
 }
-
-
