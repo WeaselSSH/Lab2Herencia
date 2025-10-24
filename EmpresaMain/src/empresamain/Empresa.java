@@ -31,13 +31,10 @@ public class Empresa {
     public boolean registrarHoras(String codigoEmp, int horas) {
         Empleado emp = empleados.get(Empleado.codigoEmp);
         if (emp == null) return false;
-        emp.horasTrabajadas += horas;
+        emp.setHorasTrabajadas(emp.getHorasTrabajadas() + horas);
         return true;
         
     }
-    
-    protected double EmpleadoVent;
-    protected double EmpleadoTemp;
     
     public boolean registrarVenta(String codigoEmp, double monto) {
           Empleado emp = empleados.get(Empleado.codigoEmp);
@@ -49,7 +46,7 @@ public class Empresa {
       }
     
     public boolean FinContrato(String codigo, localDate nuevaFecha) {
-          Empleado emp = empleados.get(codigoEmp);
+          Empleado emp = empleados.get(Empleado.codigoEmp);
           if (emp instanceof EmpleadoTemp) {
               ((EmpleadoTemp) emp).actualizarFechaContrato(nuevaFecha);
               return true;
