@@ -21,7 +21,7 @@ public class Empresa {
 
     
     public boolean registrarEmpleado(Empleado empleado) {
-        if (empleados.containsKey(empleado.codigoEmp)) 
+        if (empleados.containsKey(empleado.getCodigoEmp())) 
             return false;
         
         empleados.put(empleado.codigoEmp, empleado);
@@ -29,7 +29,7 @@ public class Empresa {
     }
 
     public boolean registrarHoras(String codigoEmp, int horas) {
-        Empleado emp = empleados.get(Empleado.codigoEmp);
+        Empleado emp = empleados.get(codigoEmp);
         if (emp == null) return false;
         emp.setHorasTrabajadas(emp.getHorasTrabajadas() + horas);
         return true;
@@ -37,22 +37,22 @@ public class Empresa {
     }
     
     public boolean registrarVenta(String codigoEmp, double monto) {
-          Empleado emp = empleados.get(Empleado.codigoEmp);
-          if (emp instanceof EmpleadoVent) {
+          Empleado emp = empleados.get(codigoEmp);
+            if (emp instanceof EmpleadoVent) {
               ((EmpleadoVent) emp).registrarVenta(monto);
               return true;
-          }
+             }
           return false;
       }
     
-    public boolean FinContrato(String codigo, localDate nuevaFecha) {
-          Empleado emp = empleados.get(Empleado.codigoEmp);
-          if (emp instanceof EmpleadoTemp) {
-              ((EmpleadoTemp) emp).actualizarFechaContrato(nuevaFecha);
-              return true;
-          }
-          return false;
-      }
+    public boolean finContrato(String codigoEmp, LocalDate nuevaFecha) {
+            Empleado emp = empleados.get(codigoEmp);
+            if (emp instanceof EmpleadoTemp) {
+                ((EmpleadoTemp) emp).actualizarFechaContrato(nuevaFecha);
+                return true;
+            }
+            return false;
+    }
 
      public double calcularPago(String codigo) {
         Empleado emp = empleados.get(codigo);

@@ -18,6 +18,10 @@ public class Empleado {
         this.horasTrabajadas=0;
     }
     
+    public String getCodigoEmp() {
+        return codigoEmp;
+    }
+    
     public void registrarHoras(double horas){
         this.horasTrabajadas += horas;
     }
