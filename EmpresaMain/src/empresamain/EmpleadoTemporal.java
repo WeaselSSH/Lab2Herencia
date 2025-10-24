@@ -30,6 +30,10 @@ public class EmpleadoTemporal extends Empleado{
         this.fechaFin = fechaNueva;
     }
     
+    public Calendar getFechaFin() {
+        return fechaFin;
+    }
+    
     public String mostrarInfo(){
         SimpleDateFormat fechaFormateada = new SimpleDateFormat("dd/MM/yyyy");
         return super.mostrarInfo() + 

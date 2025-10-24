@@ -21,6 +21,15 @@ public class Empleado {
     public String getCodigoEmp() {
         return codigoEmp;
     }
+    public String getNombreEmp() {
+        return nombreEmp;
+    }
+    public double getHorasTrabajadas() {
+        return horasTrabajadas;
+    }
+    public double getSalarioBase() {
+        return salarioBase;
+    }
     
     public void registrarHoras(double horas){
         this.horasTrabajadas += horas;
