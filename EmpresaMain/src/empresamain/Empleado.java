@@ -24,9 +24,7 @@ public class Empleado {
     public String getNombreEmp() {
         return nombreEmp;
     }
-    public double getHorasTrabajadas() {
-        return horasTrabajadas;
-    }
+
     public double getSalarioBase() {
         return salarioBase;
     }
@@ -40,6 +38,9 @@ public class Empleado {
         double deduccion = pagoProp * 0.035;
         
         return pagoProp - deduccion;
+    }
+    public double getHorasTrabajadas() {
+        return horasTrabajadas;
     }
     
     public String mostrarInfo(){

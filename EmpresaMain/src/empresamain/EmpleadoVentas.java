@@ -44,6 +44,10 @@ public class EmpleadoVentas extends Empleado{
         return total;
     }
     
+    public double getVentasMensual() {
+        return ventasMensual[];
+    }
+    
     public String mostrarInfo(){
         return super.mostrarInfo() +
                 "\nVentas Anuales: " +  ventasAnuales();
