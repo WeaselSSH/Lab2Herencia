@@ -16,7 +16,7 @@ public class FrmRegistrarHoras extends BaseFrame {
     private JButton btnRegistrar, btnCancelar;
 
     public FrmRegistrarHoras() {
-        super("VIctini Empresa", 670, 380);
+        super("Registrar Horas", 670, 380);
         initComponents();
     }
 

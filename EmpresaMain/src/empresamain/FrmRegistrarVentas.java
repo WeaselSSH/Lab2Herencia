@@ -16,7 +16,7 @@ public class FrmRegistrarVentas extends BaseFrame {
     private JButton btnRegistrar, btnCancelar;
 
     public FrmRegistrarVentas() {
-        super("Victini Empresa", 650, 340);
+        super("Registrar Ventas", 650, 340);
         initComponents();
     }
 

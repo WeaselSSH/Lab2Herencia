@@ -11,7 +11,7 @@ public class MenuPrincipal extends BaseFrame {
             btnCalcularPago, btnVerReportes, btnSalir;
 
     public MenuPrincipal() {
-        super("VIctini Empresa", 870, 680);
+        super("Victini Empresa", 870, 680);
         initComponents();
     }
 
