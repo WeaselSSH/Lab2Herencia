@@ -1,0 +1,39 @@
+
+package empresamain;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+public class Empleado {
+    protected int codigoEmp;
+    protected String nombreEmp;
+    protected Calendar fechaContratacion;
+    protected double salarioBase;
+    protected double horasTrabajadas;
+    
+    public Empleado(int codigoEmp, String nombreEmp,double salarioBase){
+        this.codigoEmp=codigoEmp;
+        this.nombreEmp=nombreEmp;
+        this.fechaContratacion=Calendar.getInstance();
+        this.salarioBase=salarioBase;
+        this.horasTrabajadas=0;
+    }
+    
+    public void registrarHoras(double horas){
+        this.horasTrabajadas += horas;
+    }
+    
+    public double calcularPago(){
+        double pagoProp = (salarioBase * (horasTrabajadas/160.00));
+        double deduccion = pagoProp * 0.035;
+        
+        return pagoProp - deduccion;
+    }
+    
+    public String mostrarInfo(){
+        SimpleDateFormat fechaFormateada = new SimpleDateFormat("dd/MM/yyyy");
+        
+        return "Codigo: "+ codigoEmp +
+                "\nNombre: " + nombreEmp +
+                "\nFecha de contratacion: " +  fechaFormateada.format(fechaContratacion.getTime());
+    }  
+}
