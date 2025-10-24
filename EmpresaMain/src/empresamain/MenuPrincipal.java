@@ -51,6 +51,8 @@ public class MenuPrincipal extends BaseFrame {
 
         btnSalir = crearBoton("Salir", 290, 495, 270, 55);
         panelCentro.add(btnSalir);
+        
+        btnSalir.addActionListener(e -> System.exit(0));
 
         setContentPane(panelPrincipal);
     }
