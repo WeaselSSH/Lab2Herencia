@@ -4,20 +4,22 @@ import com.toedter.calendar.JDateChooser;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.Calendar;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class FrmRegistrarEmpleado extends BaseFrame {
 
     private JPanel panelPrincipal, panelNorte, panelCentro;
-    private JLabel lblTitulo, lblCodigo, lblNombre, lblSalario, lblFechaContratacion, lblFinContrato,
-            lblComision, lblTipo;
+    private JLabel lblTitulo, lblCodigo, lblNombre, lblSalario, lblFechaContratacion, lblFinContrato, lblComision, lblTipo;
     private JTextField txtCodigo, txtNombre, txtSalario, txtComision;
     private JDateChooser fechaContratacion, fechaFinContrato;
     private JButton btnCancelar, btnRegistrar;
+    private JComboBox<String> cmbTipo;
 
     public FrmRegistrarEmpleado() {
         super("Registrar Empleados", 840, 640);
@@ -66,6 +68,7 @@ public class FrmRegistrarEmpleado extends BaseFrame {
         panelCentro.add(lblFechaContratacion);
 
         fechaContratacion = new JDateChooser();
+        fechaContratacion.setDateFormatString("yyyy-MM-dd");
         fechaContratacion.setBounds(270, 220, 190, 25);
         panelCentro.add(fechaContratacion);
 
@@ -73,7 +76,7 @@ public class FrmRegistrarEmpleado extends BaseFrame {
         lblTipo.setFont(lblTipo.getFont().deriveFont(Font.BOLD, 18f));
         panelCentro.add(lblTipo);
 
-        JComboBox<String> cmbTipo = new JComboBox<>(new String[]{"Estandar", "Temporal", "Ventas"});
+        cmbTipo = new JComboBox<>(new String[]{"Estandar", "Temporal", "Ventas"});
         cmbTipo.setBounds(270, 270, 190, 25);
         panelCentro.add(cmbTipo);
 
@@ -82,6 +85,7 @@ public class FrmRegistrarEmpleado extends BaseFrame {
         panelCentro.add(lblFinContrato);
 
         fechaFinContrato = new JDateChooser();
+        fechaFinContrato.setDateFormatString("yyyy-MM-dd");
         fechaFinContrato.setBounds(230, 320, 190, 25);
         panelCentro.add(fechaFinContrato);
 
@@ -102,15 +106,85 @@ public class FrmRegistrarEmpleado extends BaseFrame {
             String tipo = (String) cmbTipo.getSelectedItem();
             boolean temporal = tipo.equals("Temporal");
             boolean ventas = tipo.equals("Ventas");
-
             lblFinContrato.setVisible(temporal);
             fechaFinContrato.setVisible(temporal);
-
             lblComision.setVisible(ventas);
             txtComision.setVisible(ventas);
         });
 
+        lblFinContrato.setVisible(false);
+        fechaFinContrato.setVisible(false);
+        lblComision.setVisible(false);
+        txtComision.setVisible(false);
+
+        btnRegistrar.addActionListener(e -> onRegistrar());
+        btnCancelar.addActionListener(e -> {
+            new MenuPrincipal().setVisible(true);
+            dispose();
+        });
+
         setContentPane(panelPrincipal);
+    }
+
+    private void onRegistrar() {
+        String codigo = txtCodigo.getText().trim();
+        String nombre = txtNombre.getText().trim();
+        String sSalario = txtSalario.getText().trim();
+        if (codigo.isEmpty() || nombre.isEmpty() || sSalario.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Completa código, nombre y salario.");
+            return;
+        }
+        double salario;
+        try {
+            salario = Double.parseDouble(sSalario);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Salario inválido.");
+            return;
+        }
+        String tipo = (String) cmbTipo.getSelectedItem();
+        Empleado emp;
+        if (tipo.equals("Temporal")) {
+            if (fechaFinContrato.getDate() == null) {
+                JOptionPane.showMessageDialog(this, "Selecciona la fecha de fin de contrato.");
+                return;
+            }
+            Calendar fin = Calendar.getInstance();
+            fin.setTime(fechaFinContrato.getDate());
+            emp = new EmpleadoTemporal(codigo, nombre, salario, fin);
+        } else if (tipo.equals("Ventas")) {
+            String sCom = txtComision.getText().trim();
+            if (sCom.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingresa la comisión.");
+                return;
+            }
+            double com;
+            try {
+                com = Double.parseDouble(sCom);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Comisión inválida.");
+                return;
+            }
+            emp = new EmpleadoVentas(codigo, nombre, salario, com);
+        } else {
+            emp = new Empleado(codigo, nombre, salario);
+        }
+        boolean ok = Empresa.getEmpresa().registrarEmpleado(emp);
+        if (!ok) {
+            JOptionPane.showMessageDialog(this, "Ya existe un empleado con ese código.");
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Empleado registrado.");
+        limpiar();
+    }
+
+    private void limpiar() {
+        txtCodigo.setText("");
+        txtNombre.setText("");
+        txtSalario.setText("");
+        txtComision.setText("");
+        fechaContratacion.setDate(null);
+        fechaFinContrato.setDate(null);
+        cmbTipo.setSelectedIndex(0);
     }
 
     public static void main(String[] args) {

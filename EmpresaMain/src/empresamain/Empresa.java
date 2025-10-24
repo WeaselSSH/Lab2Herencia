@@ -4,6 +4,7 @@
  */
 package empresamain;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,6 +16,7 @@ import java.util.List;
  */
 public class Empresa {
 
+    private static final Empresa empresa = new Empresa();
     private ArrayList<Empleado> empleados = new ArrayList<>();
 
     public boolean registrarEmpleado(Empleado empleado) {
@@ -65,40 +67,45 @@ public class Empresa {
         return "Empleado no encontrado";
     }
 
-    public void generarReportes() {
+    public String generarReportesTexto() {
         int countEstandar = 0, countTemporal = 0, countVentas = 0;
-        StringBuilder reporteEstandar = new StringBuilder();
-        StringBuilder reporteTemporal = new StringBuilder();
-        StringBuilder reporteVentas = new StringBuilder();
+        String reporteEstandar = "";
+        String reporteTemporal = "";
+        String reporteVentas = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
         for (Empleado emp : empleados) {
-            String info = String.format("  [%s] Nombre: %s, Horas: %.1f, Salario Base: %.2f",
-                    emp.getCodigoEmp(), emp.getNombreEmp(), emp.getHorasTrabajadas(), emp.getSalarioBase());
-
+            String info = "  [" + emp.getCodigoEmp() + "] Nombre: " + emp.getNombreEmp()
+                    + ", Horas: " + String.format("%.1f", emp.getHorasTrabajadas())
+                    + ", Salario Base: " + String.format("%.2f", emp.getSalarioBase());
             if (emp instanceof EmpleadoVentas) {
-                EmpleadoVentas empVent = (EmpleadoVentas) emp;
-                double ventas = empVent.ventasAnuales();
-                double comision = empVent.calcularComision();
-                info += String.format(", Ventas Acum.: %.2f, Comisión: %.2f", ventas, comision);
-                reporteVentas.append(info).append("\n");
+                EmpleadoVentas ev = (EmpleadoVentas) emp;
+                double ventas = ev.ventasAnuales();
+                double comision = ev.calcularComision();
+                info += ", Ventas Acum.: " + String.format("%.2f", ventas)
+                        + ", Comisión: " + String.format("%.2f", comision);
+                reporteVentas += info + "\n";
                 countVentas++;
             } else if (emp instanceof EmpleadoTemporal) {
-                EmpleadoTemporal empTemp = (EmpleadoTemporal) emp;
-                info += String.format(", Fin Contrato: %s", empTemp.getFechaFin().toString());
-                reporteTemporal.append(info).append("\n");
+                EmpleadoTemporal et = (EmpleadoTemporal) emp;
+                String fin = et.getFechaFin() != null ? sdf.format(et.getFechaFin().getTime()) : "N/A";
+                info += ", Fin Contrato: " + fin;
+                reporteTemporal += info + "\n";
                 countTemporal++;
             } else {
-                reporteEstandar.append(info).append("\n");
+                reporteEstandar += info + "\n";
                 countEstandar++;
             }
         }
 
-        System.out.println("=== Empleados Estandar (" + countEstandar + ") ===");
-        System.out.println(reporteEstandar);
-        System.out.println("=== Empleados Temporales (" + countTemporal + ") ===");
-        System.out.println(reporteTemporal);
-        System.out.println("=== Empleados de Ventas (" + countVentas + ") ===");
-        System.out.println(reporteVentas);
+        String out = "";
+        out += "=== Empleados Estandar (" + countEstandar + ") ===\n";
+        out += reporteEstandar + "\n";
+        out += "=== Empleados Temporales (" + countTemporal + ") ===\n";
+        out += reporteTemporal + "\n";
+        out += "=== Empleados de Ventas (" + countVentas + ") ===\n";
+        out += reporteVentas;
+        return out;
     }
 
     private Empleado buscarEmpleado(String codigoEmp) {
@@ -108,5 +115,9 @@ public class Empresa {
             }
         }
         return null;
+    }
+
+    public static Empresa getEmpresa() {
+        return empresa;
     }
 }

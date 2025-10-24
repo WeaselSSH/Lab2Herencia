@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -49,14 +50,49 @@ public class FrmRegistrarHoras extends BaseFrame {
 
         txtHoras = crearTextField("", 220, 120, 180, 25);
         panelCentro.add(txtHoras);
-        
+
         btnRegistrar = crearBoton("Registrar", 180, 220, 120, 35);
         panelCentro.add(btnRegistrar);
-        
+
         btnCancelar = crearBoton("Cancelar", 340, 220, 120, 35);
         panelCentro.add(btnCancelar);
 
+        btnRegistrar.addActionListener(e -> onRegistrar());
+        btnCancelar.addActionListener(e -> {
+            new MenuPrincipal().setVisible(true);
+            dispose();
+        });
+
         setContentPane(panelPrincipal);
+    }
+
+    private void onRegistrar() {
+        String codigo = txtCodigo.getText().trim();
+        String sHoras = txtHoras.getText().trim();
+        if (codigo.isEmpty() || sHoras.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Completa código y horas.");
+            return;
+        }
+        int horas;
+        try {
+            double h = Double.parseDouble(sHoras);
+            if (h < 0) {
+                JOptionPane.showMessageDialog(this, "Horas debe ser ≥ 0.");
+                return;
+            }
+            horas = (int) Math.round(h);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Horas inválidas.");
+            return;
+        }
+        boolean ok = Empresa.getEmpresa().registrarHoras(codigo, horas);
+        if (!ok) {
+            JOptionPane.showMessageDialog(this, "Empleado no encontrado.");
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Horas registradas.");
+        new MenuPrincipal().setVisible(true);
+        dispose();
     }
 
     public static void main(String[] args) {

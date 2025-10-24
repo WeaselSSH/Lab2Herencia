@@ -4,8 +4,11 @@ import com.toedter.calendar.JDateChooser;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -50,6 +53,7 @@ public class FrmActualizarContrato extends BaseFrame {
         panelCentro.add(lblFecha);
 
         dateChooser = new JDateChooser();
+        dateChooser.setDateFormatString("yyyy-MM-dd");
         dateChooser.setBounds(230, 100, 180, 28);
         panelCentro.add(dateChooser);
 
@@ -59,7 +63,30 @@ public class FrmActualizarContrato extends BaseFrame {
         btnCancelar = crearBoton("Cancelar", 340, 200, 120, 35);
         panelCentro.add(btnCancelar);
 
+        btnActualizar.addActionListener(e -> onActualizar());
+        btnCancelar.addActionListener(e -> {
+            new MenuPrincipal().setVisible(true);
+            dispose();
+        });
+
         setContentPane(panelPrincipal);
+    }
+
+    private void onActualizar() {
+        String codigo = txtCodigo.getText().trim();
+        if (codigo.isEmpty() || dateChooser.getDate() == null) {
+            JOptionPane.showMessageDialog(this, "Ingresa código y fecha fin.");
+            return;
+        }
+        LocalDate nueva = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        boolean ok = Empresa.getEmpresa().finContrato(codigo, nueva);
+        if (!ok) {
+            JOptionPane.showMessageDialog(this, "Empleado no encontrado o no es temporal.");
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Fecha de fin actualizada.");
+        new MenuPrincipal().setVisible(true);
+        dispose();
     }
 
     public static void main(String[] args) {

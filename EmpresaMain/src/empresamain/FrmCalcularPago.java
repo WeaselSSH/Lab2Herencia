@@ -1,27 +1,22 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package empresamain;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.TextField;
-import javax.swing.*;
+import java.text.DecimalFormat;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
-/**
- *
- * @author esteb
- */
 public class FrmCalcularPago extends BaseFrame {
-
-    private Empresa empresa = new Empresa();
 
     private JPanel panelPrincipal, panelNorte, panelCentro;
     private JLabel lblTitulo, lblCodigo, lblNombre, lblTotalPagar;
     private JTextField txtCodigo, txtNombre, txtTotalPagar;
-    private JButton btnCalcular;
+    private JButton btnCalcular, btnCancelar;
 
     public FrmCalcularPago() {
         super("Calcular Pago Empleado", 600, 500);
@@ -70,24 +65,47 @@ public class FrmCalcularPago extends BaseFrame {
         txtTotalPagar.setEnabled(false);
         panelCentro.add(txtTotalPagar);
 
-        btnCalcular = crearBoton("Calcular Pago", 225, 250, 150, 45);
-        btnCalcular.addActionListener(e -> {
-            String codigo = txtCodigo.getText();
-            String resultado = empresa.calcularPagoConNombre(codigo);
-
-            if (resultado.equals("Empleado no encontrado")) {
-                txtNombre.setText("");
-                txtTotalPagar.setText("");
-                JOptionPane.showMessageDialog(this, "Empleado no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                String[] partes = resultado.replace("Empleado: ", "").split(" - Pago: ");
-                txtNombre.setText(partes[0]);
-                txtTotalPagar.setText(partes[1]);
-            }
-        });
+        btnCalcular = crearBoton("Calcular Pago", 180, 250, 150, 45);
         panelCentro.add(btnCalcular);
 
+        btnCancelar = crearBoton("Cancelar", 350, 250, 150, 45);
+        panelCentro.add(btnCancelar);
+
+        btnCalcular.addActionListener(e -> onCalcular());
+        txtCodigo.addActionListener(e -> onCalcular());
+        btnCancelar.addActionListener(e -> {
+            new MenuPrincipal().setVisible(true);
+            dispose();
+        });
+
         setContentPane(panelPrincipal);
+    }
+
+    private void onCalcular() {
+        String codigo = txtCodigo.getText().trim();
+        if (codigo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingresa el código.");
+            return;
+        }
+        String resultado = Empresa.getEmpresa().calcularPagoConNombre(codigo);
+        if (resultado.equals("Empleado no encontrado")) {
+            txtNombre.setText("");
+            txtTotalPagar.setText("");
+            JOptionPane.showMessageDialog(this, "Empleado no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String[] partes = resultado.replace("Empleado: ", "").split(" - Pago: ");
+        String nombre = partes[0];
+        double pago;
+        try {
+            pago = Double.parseDouble(partes[1]);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Formato de pago inválido.");
+            return;
+        }
+        DecimalFormat df = new DecimalFormat("#0.00");
+        txtNombre.setText(nombre);
+        txtTotalPagar.setText(df.format(pago));
     }
 
     public static void main(String[] args) {

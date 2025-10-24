@@ -20,7 +20,7 @@ public class FrmVerReportes extends BaseFrame {
     private JButton btnCerrar;
 
     public FrmVerReportes() {
-        super("VIctini Empresa", 670, 500);
+        super("VIctini Empresa", 670, 600);
         initComponents();
     }
 
@@ -53,11 +53,18 @@ public class FrmVerReportes extends BaseFrame {
         txtReporte.setBorder(BorderFactory.createLineBorder(java.awt.Color.decode("#374151")));
 
         spReporte = new JScrollPane(txtReporte);
-        spReporte.setBounds(30, 40, 600, 260);
+        spReporte.setBounds(30, 40, 600, 360);
         panelCentro.add(spReporte);
 
-        btnCerrar = crearBoton("Cerrar", 275, 335, 120, 35);
+        btnCerrar = crearBoton("Cerrar", 275, 435, 120, 35);
         panelCentro.add(btnCerrar);
+
+        btnCerrar.addActionListener(e -> {
+            new MenuPrincipal().setVisible(true);
+            dispose();
+        });
+
+        txtReporte.setText(Empresa.getEmpresa().generarReportesTexto());
 
         setContentPane(panelPrincipal);
     }

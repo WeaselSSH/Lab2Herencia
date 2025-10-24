@@ -51,8 +51,38 @@ public class MenuPrincipal extends BaseFrame {
 
         btnSalir = crearBoton("Salir", 290, 495, 270, 55);
         panelCentro.add(btnSalir);
-        
+
         btnSalir.addActionListener(e -> System.exit(0));
+
+        btnRegistrarEmpleado.addActionListener(e -> {
+            new FrmRegistrarEmpleado().setVisible(true);
+            dispose();
+        });
+
+        btnRegistrarHoras.addActionListener(e -> {
+            new FrmRegistrarHoras().setVisible(true);
+            dispose();
+        });
+
+        btnRegistrarVentas.addActionListener(e -> {
+            new FrmRegistrarVentas().setVisible(true);
+            dispose();
+        });
+
+        btnActualizarContrato.addActionListener(e -> {
+            new FrmActualizarContrato().setVisible(true);
+            dispose();
+        });
+
+        btnCalcularPago.addActionListener(e -> {
+            new FrmCalcularPago().setVisible(true);
+            dispose();
+        });
+
+        btnVerReportes.addActionListener(e -> {
+            new FrmVerReportes().setVisible(true);
+            dispose();
+        });
 
         setContentPane(panelPrincipal);
     }

@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -35,7 +36,7 @@ public class FrmRegistrarVentas extends BaseFrame {
         lblTitulo = crearLabel("Registrar Ventas", 230, 12, 520, 36);
         lblTitulo.setFont(lblTitulo.getFont().deriveFont(Font.BOLD, 22f));
         panelNorte.add(lblTitulo);
-        
+
         lblCodigo = crearLabel("Código Empleado:", 60, 40, 180, 25);
         lblCodigo.setFont(lblCodigo.getFont().deriveFont(Font.BOLD, 18f));
         panelCentro.add(lblCodigo);
@@ -54,10 +55,39 @@ public class FrmRegistrarVentas extends BaseFrame {
         panelCentro.add(btnRegistrar);
 
         btnCancelar = crearBoton("Cancelar", 340, 170, 120, 35);
-        btnCancelar.addActionListener(e -> dispose());
         panelCentro.add(btnCancelar);
 
+        btnRegistrar.addActionListener(e -> onRegistrar());
+        btnCancelar.addActionListener(e -> {
+            new MenuPrincipal().setVisible(true);
+            dispose();
+        });
+
         setContentPane(panelPrincipal);
+    }
+
+    private void onRegistrar() {
+        String codigo = txtCodigo.getText().trim();
+        String sMonto = txtMonto.getText().trim();
+        if (codigo.isEmpty() || sMonto.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Completa código y monto.");
+            return;
+        }
+        double monto;
+        try {
+            monto = Double.parseDouble(sMonto);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Monto inválido.");
+            return;
+        }
+        boolean ok = Empresa.getEmpresa().registrarVenta(codigo, monto);
+        if (!ok) {
+            JOptionPane.showMessageDialog(this, "Empleado no encontrado o no es de ventas.");
+            return;
+        }
+        JOptionPane.showMessageDialog(this, "Venta registrada.");
+        new MenuPrincipal().setVisible(true);
+        dispose();
     }
 
     public static void main(String[] args) {
